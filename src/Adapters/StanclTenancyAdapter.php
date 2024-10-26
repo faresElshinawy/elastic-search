@@ -15,9 +15,9 @@ class StanclTenancyAdapter implements TenantAdapterInterface
         $tenantModel    = config('elastic-search.tenant_model');
         $tenancyFacade  = config('elastic-search.tenancy_facade');
 
-        if(!class_exists($tenantModel) || !class_exists($tenancyFacade))
+        if(!$this->packageInstalled())
         {
-            throw new Exception('Please make sure to install and setup elasticsearch/elasticsearch package to be able to use this command.');
+            return;
         }
 
         $this->tenantModel   = new $tenantModel;
@@ -32,6 +32,7 @@ class StanclTenancyAdapter implements TenantAdapterInterface
      */
     public function initializeTenantByReference($reference): bool
     {
+        $this->ensurePackageIsInstalled();
         $tenant = $this->tenantModel::where(config('elastic-search.tenant_model_command_reference_field','id'),$reference)->first();
         if(!$tenant){return false;}
         $this->initializeTenant($tenant);
@@ -46,6 +47,7 @@ class StanclTenancyAdapter implements TenantAdapterInterface
      */
     public function initializeTenant($tenant): void
     {
+        $this->ensurePackageIsInstalled();
         $this->tenancyFacade::initialize($tenant);
     }
 
@@ -56,6 +58,29 @@ class StanclTenancyAdapter implements TenantAdapterInterface
      */
     public function getTenantModel(): object
     {
+        $this->ensurePackageIsInstalled();
         return $this->tenantModel;
+    }
+
+    /**
+     * check if stancl/tenancy package is install to use the adapter
+     *
+     * @return boolean
+     */
+    public function packageInstalled(): bool
+    {
+        $installedPackages = json_decode(file_get_contents(base_path('composer.json')), true);
+        if (isset($installedPackages['require']['fareselshinawy/elastic-search'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function ensurePackageIsInstalled(): void
+    {
+        if (!$this->packageInstalled()) {
+            throw new Exception('Please make sure to install and setup stancl/tenancy package to be able to use this command.');
+        }
     }
 }
