@@ -12,14 +12,9 @@ class StanclTenancyAdapter implements TenantAdapterInterface
 
     public function __construct()
     {
+        if(!$this->packageInstalled()){return;}
         $tenantModel    = config('elastic-search.tenant_model');
         $tenancyFacade  = config('elastic-search.tenancy_facade');
-
-        if(!$this->packageInstalled())
-        {
-            return;
-        }
-
         $this->tenantModel   = new $tenantModel;
         $this->tenancyFacade  = new $tenancyFacade;
     }
