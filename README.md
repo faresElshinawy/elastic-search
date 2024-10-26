@@ -1,66 +1,214 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Elasticsearch Integration Package
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The package provides seamless integration with Elasticsearch, supporting multi-tenant architecture and offering an intuitive query builder interface.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Easy integration with Laravel models
+- Built-in multi-tenant support using stancl/tenancy
+- Fluent query builder interface
+- Automated index management
+- Configurable schema mappings
+- Relationship syncing support
+- Artisan commands for index management
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+You can install the package via composer:
 
-## Learning Laravel
+```bash
+composer require fareselshinawy/elasticsearch
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+If you plan to use multi-tenant features:
+multi tenant can be extend to other packages be making your own tenant adapter implementing TenantAdapterInterface
+```bash
+composer require stancl/tenancy
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Configuration
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Publish the configuration file:
 
-## Laravel Sponsors
+```bash
+php artisan vendor:publish --provider="Fareselshinawy\ElasticSearch\ElasticSearchServiceProvider"
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Configure your Elasticsearch credentials in your `.env` file:
 
-### Premium Partners
+```env
+ELASTIC_API_ENDPOINT=your-elasticsearch-endpoint
+ELASTIC_API_KEY=your-api-key
+ELASTIC_INDEX_PREFIX=optional-prefix
+ELASTIC_DEFAULT_SIZE_VARIABLE=10
+ELASTIC_INDEX_SYNC_CHUNK_SIZE=500
+ENABLE_ELASTIC_FOR_TENANTS=true
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Usage
 
-## Contributing
+### Model Setup
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+To make your model searchable with Elasticsearch, add the following methods to your model:
 
-## Code of Conduct
+```php
+use Fareselshinawy\ElasticSearch\Traits\ElasticSearchable;
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+class User extends Model
+{
+    use ElasticSearchable;
 
-## Security Vulnerabilities
+    // Required: Define the data to be synchronized with Elasticsearch
+    public function getElasticSearchSyncAbleData()
+    {
+        return [
+            "name"  => Str::lower($this->name),
+            "email" => $this->email,
+            "id"    => $this->id
+        ];
+    }
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    // Optional: Define custom index mappings
+    public function getIndexableProperties()
+    {
+        return [
+            "name"  => ['type' => 'keyword'],
+            "email" => ['type' => 'keyword'],
+            "id"    => ['type' => 'integer']
+        ];
+    }
+
+    // Optional: Define relations to sync
+    public $elasticSyncAbleRelations = [];
+
+    // Optional: Define dependent indexes that should be updated
+    public $dependentIndexesRelations = [];
+
+    // Optional: Custom index name
+    public function getElasticIndexKey()
+    {
+        return $this->indexPrefix() . 'users';
+    }
+}
+```
+
+### Query Builder Usage
+
+The package provides a fluent interface for building Elasticsearch queries:
+
+```php
+// Basic queries
+User::elasticWhere('name', 'John')
+    ->elasticOrWhere('email', 'john@example.com')
+    ->elasticGet();
+
+// Wildcard searches
+User::elasticWhereLike('name', 'jo')
+    ->elasticWhereStartWith('email', 'john')
+    ->elasticGet();
+
+// Range queries
+User::elasticRange('age', 18, 30)->elasticGet();
+
+// Term queries
+User::elasticTermMust('status', 'active')
+    ->elasticTermMustNot('role', 'guest')
+    ->elasticGet();
+
+// Match queries
+User::elasticWhereMatch('description', 'search text')
+    ->elasticWhereMatchPhrase('title', 'exact phrase')
+    ->elasticGet();
+
+// Nested queries
+User::elasticNested('orders', function($query) {
+    $query->elasticWhere('status', 'completed');
+})->elasticGet();
+
+// Sorting
+User::elasticSortBy('created_at', 'desc')->elasticGet();
+
+// Pagination
+User::elasticWhere('status', 'active')->elasticPaginate(15);
+```
+
+### Available Query Methods
+
+#### Term Queries
+- `elasticTerm(field, value, conditionType = 'must')`
+- `elasticTermMust(field, value)`
+- `elasticTermMustNot(field, value)`
+- `elasticTermShould(field, value)`
+
+#### Terms Queries (Arrays)
+- `elasticTerms(field, values, conditionType = 'must')`
+- `elasticTermMustIn(field, values)`
+- `elasticTermMustNotIn(field, values)`
+- `elasticTermShouldIn(field, values)`
+
+#### Match Queries
+- `elasticMatch(field, value, conditionType = 'must')`
+- `elasticWhereMatch(field, value)`
+- `elasticOrWhereMatch(field, value)`
+- `elasticMatchMustNot(field, value)`
+
+#### Wildcard Queries
+- `elasticWildcard(field, value)`
+- `elasticWildcardLike(field, value)`
+- `elasticWildcardStartWith(field, value)`
+- `elasticWildcardEndWith(field, value)`
+
+#### Range Queries
+- `elasticRange(field, from, to)`
+- `greaterOrEqual(field, value)`
+- `lessOrEqual(field, value)`
+
+### Artisan Commands
+
+The package provides several Artisan commands for index management:
+
+#### Standard Commands
+```bash
+php artisan elastic:index-create        # Create index
+php artisan elastic:index-delete        # Delete index
+php artisan elastic:index-sync          # Sync data
+php artisan elastic:index-update        # Update index
+```
+
+#### Multi-tenant Commands
+```bash
+php artisan elastic:tenants-index-create  # Create tenant index
+php artisan elastic:tenants-index-delete  # Delete tenant index
+php artisan elastic:tenants-index-sync    # Sync tenant data
+php artisan elastic:tenants-index-update  # Update tenant index
+```
+
+For tenant-specific operations, use the `--tenantReference` flag:
+```bash
+php artisan elastic:tenants-index-sync --tenantReference=tenant1
+```
+
+## Multi-tenant Support
+
+The package integrates with `stancl/tenancy` for multi-tenant support. Configure tenant-specific settings in the config file:
+
+```php
+'enable_elastic_for_tenants' => true,
+'tenants_indexable' => [
+    'user' => new App\Models\User
+],
+'tenant_model' => 'App\Models\Tenant',
+'tenancy_facade' => 'Stancl\Tenancy\Facades\Tenancy',
+```
+
+## Security
+
+If you discover any security-related issues, please email [faresleshinawy560@gmail.com] instead of using the issue tracker.
+
+## Credits
+
+- [Fares Ashraf Ibrahim Elshinawy]
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
