@@ -39,7 +39,7 @@ trait HasElasticSearch
             Log::error("failed to sync record with id " . $this->id . ' data to elastic search index for ' . $indexKey . "\n" . $e->getMessage());
         }
     }
-
+    
     /**
      * sync latest changes made to current model to the indexes that depend on like orders index has user name if user name changed we need the updates to reflect relations like orders
      *
