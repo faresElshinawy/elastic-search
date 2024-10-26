@@ -78,10 +78,10 @@ class User extends Model
         ];
     }
 
-    // Optional: Define relations to sync
+    // Optional: Define relations to sync as example department:id,name..etc
     public $elasticSyncAbleRelations = [];
 
-    // Optional: Define dependent indexes that should be updated
+    // Optional: Define dependent indexes that should be updated ( relation => class ) users => User::class
     public $dependentIndexesRelations = [];
 
     // Optional: Custom index name
@@ -160,8 +160,8 @@ User::elasticWhere('status', 'active')->elasticPaginate(15);
 
 #### Range Queries
 - `elasticRange(field, from, to)`
-- `greaterOrEqual(field, value)`
-- `lessOrEqual(field, value)`
+- `elasticGreaterOrEqual(field, value)`
+- `elasticLessOrEqual(field, value)`
 
 ### Artisan Commands
 
