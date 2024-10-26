@@ -27,7 +27,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Fareselshinawy\\ElasticSearch\\ElasticSearchServiceProvider"
+                "Fareselshinawy\\ElasticSearch\\Providers\\ElasticSearchServiceProvider"
             ]
         }
     }
