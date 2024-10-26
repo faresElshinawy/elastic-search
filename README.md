@@ -31,7 +31,7 @@ composer require stancl/tenancy
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --provider="Fareselshinawy\ElasticSearch\ElasticSearchServiceProvider"
+php artisan vendor:publish --provider="Fareselshinawy\ElasticSearch\Providers\ElasticSearchServiceProvider"
 ```
 
 Configure your Elasticsearch credentials in your `.env` file:
