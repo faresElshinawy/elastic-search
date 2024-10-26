@@ -10,15 +10,6 @@ class StanclTenancyAdapter implements TenantAdapterInterface
     private $tenantModel;
     private $tenancyFacade;
 
-    public function __construct()
-    {
-        if(!$this->packageInstalled()){return;}
-        $tenantModel    = config('elastic-search.tenant_model');
-        $tenancyFacade  = config('elastic-search.tenancy_facade');
-        $this->tenantModel   = new $tenantModel;
-        $this->tenancyFacade  = new $tenancyFacade;
-    }
-
     /**
      * initialize tenant by reference
      *
@@ -27,8 +18,8 @@ class StanclTenancyAdapter implements TenantAdapterInterface
      */
     public function initializeTenantByReference($reference): bool
     {
-        $this->ensurePackageIsInstalled();
-        $tenant = $this->tenantModel::where(config('elastic-search.tenant_model_command_reference_field','id'),$reference)->first();
+        $tenantModel = $this->getTenantModel();
+        $tenant      = $tenantModel::where(config('elastic-search.tenant_model_command_reference_field','id'),$reference)->first();
         if(!$tenant){return false;}
         $this->initializeTenant($tenant);
         return true;
@@ -43,7 +34,8 @@ class StanclTenancyAdapter implements TenantAdapterInterface
     public function initializeTenant($tenant): void
     {
         $this->ensurePackageIsInstalled();
-        $this->tenancyFacade::initialize($tenant);
+        $tenancyFacade = $this->getTenancyFacade();
+        $tenancyFacade::initialize($tenant);
     }
 
     /**
@@ -54,7 +46,26 @@ class StanclTenancyAdapter implements TenantAdapterInterface
     public function getTenantModel(): object
     {
         $this->ensurePackageIsInstalled();
-        return $this->tenantModel;
+        if (!$this->tenantModel) {
+            $tenantModelClass    = config('elastic-search.tenant_model');
+            $this->tenantModel   = new $tenantModelClass;
+        }
+        return $this->tenantModel; // Create a new instance when needed
+    }
+
+    /**
+     * get tenant facade
+     *
+     * @return object
+     */
+    public function getTenancyFacade(): object
+    {
+        $this->ensurePackageIsInstalled();
+        if (!$this->tenancyFacade) {
+            $tenancyFacadeClass  = config('elastic-search.tenancy_facade');
+            $this->tenancyFacade = new $tenancyFacadeClass;
+        }
+        return $this->tenancyFacade; // Create a new instance when needed
     }
 
     /**
@@ -65,7 +76,7 @@ class StanclTenancyAdapter implements TenantAdapterInterface
     public function packageInstalled(): bool
     {
         $installedPackages = json_decode(file_get_contents(base_path('composer.json')), true);
-        if (isset($installedPackages['require']['fareselshinawy/elastic-search'])) {
+        if (isset($installedPackages['require']['stancl/tenancy'])) {
             return true;
         } else {
             return false;
