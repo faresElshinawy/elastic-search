@@ -94,7 +94,7 @@ return [
     /*
         to use elastic index tenants command make sure you have installed stancl/tenancy package and set enable_elastic_for_tenants to true
     */
-    'enable_elastic_for_tenants' => env('ENABLE_ELASTIC_FOR_TENANTS',true),
+    'enable_elastic_for_tenants' => env('ENABLE_ELASTIC_FOR_TENANTS',false),
 
     /*
         because you may use diff indexable models for tenants so tenants indexes is set in tenants_indexable option
