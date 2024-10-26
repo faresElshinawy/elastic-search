@@ -3,6 +3,7 @@
     "description": "elastic-search package provides a seamless integeration of elastic search into laravel appications, desinged to simplify search and indexing functionalities. It offers an easy-to-use interface for managing elastic search queries, along with full support for multi tenant and standard projects.",
     "type": "library",
     "require": {
+        "php": ">=8.0.0",
         "elasticsearch/elasticsearch": "^8.15"
     },
     "license": "MIT",

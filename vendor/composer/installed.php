@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'fareselshinawy/elastic-search',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '12a4574910f761c983b7016df598e006ba8adcc1',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'e649a7054c9deea99e446875ddd6c4f3b12c3f3e',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'fareselshinawy/elastic-search' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '12a4574910f761c983b7016df598e006ba8adcc1',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'e649a7054c9deea99e446875ddd6c4f3b12c3f3e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -49,7 +49,7 @@
         'guzzlehttp/promises' => array(
             'pretty_version' => '2.0.x-dev',
             'version' => '2.0.9999999.9999999-dev',
-            'reference' => '6ea8dd08867a2a42619d65c3deb2c0fcbf81c8f8',
+            'reference' => 'f9c436286ab2892c7db7be8c8da4ef61ccf7b455',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/promises',
             'aliases' => array(),
@@ -67,7 +67,7 @@
         'open-telemetry/api' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'f2800372b245b44f6b07497917338223609362f4',
+            'reference' => '542064815d38a6df55af7957cd6f1d7d967c99c6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../open-telemetry/api',
             'aliases' => array(
@@ -137,8 +137,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -153,8 +153,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -171,8 +171,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -198,11 +198,11 @@
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1',
+            'reference' => '63afe740e99a13ba87ec199bb07bbdee937a5b62',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
             'aliases' => array(
-                0 => '3.5.x-dev',
+                0 => '3.6.x-dev',
             ),
             'dev_requirement' => false,
         ),
