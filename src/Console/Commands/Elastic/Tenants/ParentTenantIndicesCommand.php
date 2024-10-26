@@ -36,7 +36,6 @@ class ParentTenantIndicesCommand extends Command
         // making sure that elastic search package is installed
         if(!class_exists('Elastic\Elasticsearch\ClientBuilder',true))
         {
-            $this->error('Please make sure to install and setup elasticsearch/elasticsearch package to be able to use this command.');
             throw new Exception('Please make sure to install and setup elasticsearch/elasticsearch package to be able to use this command.');
         }
     }
