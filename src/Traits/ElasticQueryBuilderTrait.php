@@ -10,6 +10,7 @@ trait ElasticQueryBuilderTrait
     private array $sortOptions = ['sort' => []];
     private int $totalElasticSearchResult;
     private int $queryStringIndexKey;
+    private array $selectedFields = [];
     protected int $size = 10;
     protected int $page = 1;
     private $elasticQueryFilters = [];
@@ -36,7 +37,8 @@ trait ElasticQueryBuilderTrait
             'size'  => $size,
             'body' => [
                 'query' => $this->elasticQuery,
-                'sort'  => $this->sortOptions['sort']
+                'sort'  => $this->sortOptions['sort'],
+                '_source' => $this->selectedFields
             ]
         ],$this->elasticQueryFilters));
 
@@ -817,7 +819,7 @@ trait ElasticQueryBuilderTrait
     public function scopeElasticSelect($query, array $fields = []): self
     {
         if (!empty($fields)) {
-            $this->elasticQuery['_source'] = $fields;
+            $this->selectedFields = $fields;
         }
         return $this;
     }
