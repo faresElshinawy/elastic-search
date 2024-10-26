@@ -1,0 +1,33 @@
+{
+    "name": "fareselshinawy/elastic-search",
+    "description": "elastic-search package provides a seamless integeration of elastic search into laravel appications, desinged to simplify search and indexing functionalities. It offers an easy-to-use interface for managing elastic search queries, along with full support for multi tenant and standard projects.",
+    "type": "library",
+    "require": {
+        "elasticsearch/elasticsearch": "^8.15"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Fareselshinawy\\ElasticSearch\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "fares el shinawy",
+            "email": "faresleshinawy560@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fareselshinawy\\ElasticSearch\\ElasticSearchServiceProvider"
+            ]
+        }
+    }
+}
